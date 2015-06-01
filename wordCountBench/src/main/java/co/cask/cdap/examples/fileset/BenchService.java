@@ -52,14 +52,14 @@ public  class BenchService extends AbstractService{
 
 
                 double duration = (endTime - startTime)/1000; //from ms to s
-                double throughput = benchSize / duration;
+                long throughput = (long)(benchSize / duration);
 
                 Map<String, Object> results = new HashMap<String, Object>();
 
-                results.put("Type", "wordcount");
-                results.put("Duration,s", duration);
-                results.put("BenchSize,Bytes", benchSize);
-                results.put("Throughput,Bytes/s", throughput);
+                results.put("processMethod", "Hadoop MR");
+                results.put("benchduration", duration);
+                results.put("benchsize", benchSize);
+                results.put("throughput", throughput);
 
 
                 responder.sendJson(200, results);

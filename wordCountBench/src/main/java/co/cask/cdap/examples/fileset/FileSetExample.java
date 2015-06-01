@@ -54,5 +54,6 @@ public class FileSetExample extends AbstractApplication {
     addMapReduce(new RandomTextWriter());
     addMapReduce(new WordCount());
     addService(new BenchService());
+      addService(new BenchUI());
   }
 }
