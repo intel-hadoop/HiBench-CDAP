@@ -48,6 +48,7 @@ public class FileSetExample extends AbstractApplication {
         createDataset("benchData", Table.class);
         addMapReduce(new TeraGen());
         addMapReduce(new TeraSort());
+        addMapReduce(new TeraValidate());
         addService(new BenchService());
         addService(new BenchUI());
     }
