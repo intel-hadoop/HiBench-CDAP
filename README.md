@@ -33,9 +33,9 @@ Example: Word Count
 
 3.	wait to get your benchmark result.
 
-4.	download the input text file or count result file by clicking button ![save button](https://raw.githubusercontent.com/intel-hadoop/HiBench-CDAP/master/resources/save.png?token=AGtJt8V2j1crb47a0McOvLixTm3mOZnVks5Vo2FpwA%3D%3D)
+4.	download the input text file or count result file by clicking button ![save button](/resources/save.png)
 
-![example page](https://raw.githubusercontent.com/intel-hadoop/HiBench-CDAP/master/resources/wordCountPage.PNG?token=AGtJt92pMIOU6NzLv1bq-7ocJWJJ-Tqyks5Vo2KywA%3D%3D)
+![example page](/resources/wordCountPage.PNG)
 
 ## Development Environment
 
