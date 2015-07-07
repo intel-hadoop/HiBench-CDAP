@@ -30,81 +30,79 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 
 /**
- * the MapReduce to run the WordCount
+ * the MapReduce to run the WordCount program
  */
 public class WordCount extends AbstractMapReduce {
 
-  @UseDataSet("benchData")
-  private Table benchData;
+    @UseDataSet("benchData")
+    private Table benchData;
 
-  //these are to mark the time duration and bench size
-  public static double startTime= 2;
-  public static double endTime= 1;
-  public static double benchSize = 100*1024*1024;
+    //these are to mark the time duration and bench size
+    public static double startTime = 2;
+    public static double endTime = 1;
+    public static double benchSize = 100 * 1024 * 1024;
 
-  static final byte[] ONE = {'1'};
-  static final byte[] TWO = {'2'};
-  
+    static final byte[] ONE = {'1'};
+    static final byte[] TWO = {'2'};
 
-
-
-  @Override
-  public void configure() {
-    setInputDataset("lines");
-    setOutputDataset("counts");
-    setMapperResources(new Resources(1024));
-    setReducerResources(new Resources(1024));
-  }
-
-  @Override
-  public void beforeSubmit(MapReduceContext context) throws Exception {
-    startTime = System.currentTimeMillis();
-    benchData.put(new Put(ONE, ONE, startTime));
-    Job job = context.getHadoopJob();
-    job.setMapperClass(Tokenizer.class);
-    job.setReducerClass(Counter.class);
-    job.setNumReduceTasks(1);
-  }
-
-  @Override
-  public void onFinish(boolean succeeded,MapReduceContext context) throws Exception {
-    endTime = System.currentTimeMillis();
-    benchData.put(new Put(ONE, TWO, endTime));
-
-  }
-
-  /**
-   * A mapper that tokenizes each input line and emits each token with a value of 1.
-   */
-  public static class Tokenizer extends Mapper<LongWritable, Text, Text, IntWritable> {
-
-    private Text word = new Text();
-    private static final IntWritable ONE = new IntWritable(1);
 
     @Override
-    public void map(LongWritable key, Text data, Context context)
-            throws IOException, InterruptedException {
-      for (String token : data.toString().split(" ")) {
-        word.set(token);
-        context.write(word, ONE);
-      }
+    public void configure() {
+        setInputDataset("lines");
+        setOutputDataset("counts");
+        setMapperResources(new Resources(1024));
+        setReducerResources(new Resources(1024));
     }
-  }
-
-  /**
-   * A reducer that sums up the counts for each key.
-   */
-  public static class Counter extends Reducer<Text, IntWritable, String, Long> {
 
     @Override
-    public void reduce(Text key, Iterable<IntWritable> values, Context context)
-            throws IOException, InterruptedException {
-      long sum = 0L;
-      for (IntWritable value : values) {
-        sum += value.get();
-      }
-      context.write(key.toString(), sum);
+    public void beforeSubmit(MapReduceContext context) throws Exception {
+        startTime = System.currentTimeMillis();
+        benchData.put(new Put(ONE, ONE, startTime));
+        Job job = context.getHadoopJob();
+        job.setMapperClass(Tokenizer.class);
+        job.setReducerClass(Counter.class);
+        job.setNumReduceTasks(1);
     }
-  }
+
+    @Override
+    public void onFinish(boolean succeeded, MapReduceContext context) throws Exception {
+        endTime = System.currentTimeMillis();
+        benchData.put(new Put(ONE, TWO, endTime));
+
+    }
+
+    /**
+     * A mapper that tokenizes each input line and emits each token with a value of 1.
+     */
+    public static class Tokenizer extends Mapper<LongWritable, Text, Text, IntWritable> {
+
+        private Text word = new Text();
+        private static final IntWritable ONE = new IntWritable(1);
+
+        @Override
+        public void map(LongWritable key, Text data, Context context)
+                throws IOException, InterruptedException {
+            for (String token : data.toString().split(" ")) {
+                word.set(token);
+                context.write(word, ONE);
+            }
+        }
+    }
+
+    /**
+     * A reducer that sums up the counts for each key.
+     */
+    public static class Counter extends Reducer<Text, IntWritable, String, Long> {
+
+        @Override
+        public void reduce(Text key, Iterable<IntWritable> values, Context context)
+                throws IOException, InterruptedException {
+            long sum = 0L;
+            for (IntWritable value : values) {
+                sum += value.get();
+            }
+            context.write(key.toString(), sum);
+        }
+    }
 
 }

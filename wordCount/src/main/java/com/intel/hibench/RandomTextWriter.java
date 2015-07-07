@@ -21,6 +21,7 @@ import java.util.Random;
 
 /**
  * Created by peilunzh on 5/15/2015.
+ * This mapreduce generates a random text for word count
  */
 public class RandomTextWriter extends AbstractMapReduce {
 

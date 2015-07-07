@@ -26,25 +26,25 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  */
 public class WordCountApp extends AbstractApplication {
 
-  @Override
-  public void configure() {
-    setName("WordCount");
-    setDescription("Benchmark Application with workload wordCount");
-    createDataset("lines", FileSet.class, FileSetProperties.builder() 
-            .setInputFormat(TextInputFormat.class)
-            .setOutputFormat(TextOutputFormat.class)
-	    .setOutputProperty(TextOutputFormat.SEPERATOR," ")
-            .build());
-    createDataset("counts", FileSet.class, FileSetProperties.builder()
-            .setInputFormat(TextInputFormat.class)
-            .setOutputFormat(TextOutputFormat.class)
-	    .setOutputProperty(TextOutputFormat.SEPERATOR," ")
-            .build());
-    createDataset("benchData",Table.class);
-    addService(new FileSetService());
-    addMapReduce(new RandomTextWriter());
-    addMapReduce(new WordCount());
-    addService(new BenchService());
-      addService(new BenchUI());
-  }
+    @Override
+    public void configure() {
+        setName("WordCount");
+        setDescription("Benchmark Application with workload wordCount");
+        createDataset("lines", FileSet.class, FileSetProperties.builder()
+                .setInputFormat(TextInputFormat.class)
+                .setOutputFormat(TextOutputFormat.class)
+                .setOutputProperty(TextOutputFormat.SEPERATOR, " ")
+                .build());
+        createDataset("counts", FileSet.class, FileSetProperties.builder()
+                .setInputFormat(TextInputFormat.class)
+                .setOutputFormat(TextOutputFormat.class)
+                .setOutputProperty(TextOutputFormat.SEPERATOR, " ")
+                .build());
+        createDataset("benchData", Table.class);
+        addService(new FileSetService());
+        addMapReduce(new RandomTextWriter());
+        addMapReduce(new WordCount());
+        addService(new BenchService());
+        addService(new BenchUI());
+    }
 }

@@ -30,8 +30,9 @@ import java.util.Map;
 
 /**
  * Created by peilunzh on 5/11/2015.
+ * This service serves the json format benchmark result
  */
-public  class BenchService extends AbstractService{
+public class BenchService extends AbstractService {
     public static final String SERVICE_NAME = "Bench";
     static final byte[] ONE = {'1'};
     static final byte[] TWO = {'2'};
@@ -39,13 +40,13 @@ public  class BenchService extends AbstractService{
 
 
     @Override
-    protected void configure(){
+    protected void configure() {
         setName(SERVICE_NAME);
         setDescription("this returns the benchmark result");
         addHandler(new BenchHandler());
     }
 
-    public  class BenchHandler extends AbstractHttpServiceHandler {
+    public class BenchHandler extends AbstractHttpServiceHandler {
 
         @UseDataSet("benchData")
         private Table benchData;
@@ -53,19 +54,17 @@ public  class BenchService extends AbstractService{
         @Path("benchmark")
         @GET
         public void benchmark(HttpServiceRequest request, HttpServiceResponder responder) {
-            Row result = benchData.get(new Get(ONE,ONE,TWO,THREE));
-            if(result.isEmpty()){
-                responder.sendError(404,"no result, should run wordcount first");
-            }
-
-            else {
+            Row result = benchData.get(new Get(ONE, ONE, TWO, THREE));
+            if (result.isEmpty()) {
+                responder.sendError(404, "no result, should run wordcount first");
+            } else {
                 double startTime = result.getDouble(ONE);
                 double endTime = result.getDouble(TWO);
                 double benchSize = Double.valueOf(result.getLong(THREE).toString());
 
 
-                double duration = (endTime - startTime)/1000; //from ms to s
-                long throughput = (long)(benchSize / duration);
+                double duration = (endTime - startTime) / 1000; //from ms to s
+                long throughput = (long) (benchSize / duration);
 
                 Map<String, Object> results = new HashMap<String, Object>();
 
