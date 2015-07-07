@@ -1,0 +1,266 @@
+<!--Created by peilunzh on 5/21/2015.
+minify this and add it to the BenchUI
+--><!DOCTYPE html>
+<html>
+<head>
+    <title>CDAP-Bench</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"-->
+    <style>
+        body {
+        text-align: center;
+        font-family: Verdana, "Microsoft Yahei", serif;
+        font-weight: bold;
+        }
+
+        .generate, .execute, fieldset {
+        margin: 0 auto;
+        width: 16.6%;
+        text-align: left;
+        }
+
+        fieldset {
+        width: 42%;
+        }
+
+        button {
+        margin-left: 60%;
+        margin-top: 3%;
+        margin-bottom: 20px;
+        }
+
+        input, select {
+        width: 100%;
+        margin-top: 2%;
+        margin-bottom: 3%;
+        }
+
+        #geneimg, #execimg {
+        float: right;
+        display: none;
+        }
+
+        #logo {
+        margin-top: 15px;
+        width: 150px;
+        heigt: 99px;
+        }
+
+        table {
+        width: 100%;
+        text-align: right;
+        }
+
+        #tableTitle {
+        text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<img id="logo" src="http://www-scf.usc.edu/~smileham/itp104/images/intel-logo.png">
+
+<h1>Word Count</h1>
+
+<p>Word Count Benchmark for CDAP</p><br>
+
+<div class="generate">
+
+    <label for="size">Input Filesize: </label><br>
+    <input id="size" placeholder="enter filesize(MB)"><br>
+
+
+    <button id="randomtextwriter" class="program">Generate</button>
+    <img id="geneimg" height="12%" width="12%"
+         src="http://www.dabaoku.com/dabaoku/uploads/allimg/091021/2222023L0-8.gif">
+</div>
+
+<div class="execute">
+    <label for="method">Data Processing Method: </label><br>
+    <select id="method">
+        <option value="mr">Hadoop MR</option>
+        <option value="spark">Spark</option>
+    </select><br>
+
+    <label for="iterate">Iteration Times: </label><br>
+    <input id="iterate" placeholder="Enter Iteration Times"><br>
+
+    <button id="wordcount" class="program" disabled="disabled">Execute</button>
+    <img id="execimg" height="12%" width="12%"
+         src="http://www.dabaoku.com/dabaoku/uploads/allimg/091021/2222023L0-8.gif">
+</div>
+
+<fieldset>
+    <legend>RESULT:</legend>
+    <table border="1" cellspacing=".5">
+        <tr id="tableTitle">
+            <td>Processing Method</td>
+            <td>Size (Bytes)</td>
+            <td>Duration (s)</td>
+            <td>Throughput (Bytes/s)</td>
+            <td>Download</td>
+        </tr>
+    </table>
+
+</fieldset>
+
+
+<script>
+
+    //when click the generate or execute, run the program
+    $(document).ready(function () {
+        //generate the data
+        $("#randomtextwriter").click(function () {
+            dataGen();
+        });
+
+        //run wordcount
+        $("#wordcount").click(function () {
+            wordCount();
+        });
+    });
+
+
+    var inputPath;
+    var outputPath;
+    var iterateTimes;
+    var iterateRun;
+    var lock = 0;
+
+    //generate the input file for wordcount
+    function dataGen() {
+        var size = $("#size").val();
+        inputPath = fileNameGen();
+
+        var data = {"dataset.lines.output.path": inputPath, "size": size};
+        var stringdata = JSON.stringify(data);
+        console.log(stringdata);
+
+        //run the mapReduce RandomTextWriter now
+        $.post("http://localhost:10000/v3/namespaces/default/apps/WordCount/mapreduce/RandomTextWriter/start",
+                stringdata
+                , function () {
+                    console.log("Data: " + stringdata);
+                });
+        $("#inputDownload").remove();
+        $("#geneimg").show();
+
+        //check if the job is down and enable the button
+        window.setTimeout(generateFinished(), 3000);
+    }
+
+    //to get generating status, alert if complete
+    function generateFinished() {
+        var generateTimer = setInterval(function () {
+            $.getJSON("http://localhost:10000/v3/namespaces/default/apps/WordCount/mapreduce/RandomTextWriter/status",
+                    function (data) {
+                        if (data.status === "STOPPED") {
+                            console.log(data.status);
+                            $("#wordcount").removeAttr('disabled');
+
+                            $("#geneimg").hide();
+                            $("#geneimg").after("<a href=\"http://localhost:10000/v3/namespaces/default/apps/WordCount/services/FileSetService/methods/lines?path="+inputPath+"/part-m-00000\">" +
+                            "<img id=\"inputDownload\" src=\"https://lh3.googleusercontent.com/6Gx6OeYFqcxmydQdB5tOhZNi2PjgNcbIc6bkyugekYztdaUviXDiQJf1GofnkeuAE4BN=s16\" alt=\"\" style=\"width:20px; height:auto;\"></a>")
+                            clearInterval(generateTimer);
+                            alert("Complete");
+                        }
+                    }
+            );
+        }, 500);
+    }
+
+
+    //run multiple times Wordcount
+    function wordCount() {
+        iterateTimes = $("#iterate").val();
+        $("#execimg").show();
+        iterateRun = setInterval(function () {
+
+            $.getJSON("http://localhost:10000/v3/namespaces/default/apps/WordCount/mapreduce/WordCount/status",
+                    function (data) {
+                        if (data.status == "STOPPED" && lock == 0) {
+                            if (iterateTimes > 0) {
+                                iterateTimes = iterateTimes - 1;
+                                wordCountOnce();
+                            } else {
+                                clearInterval(iterateRun);
+                                $("#execimg").hide();
+                            }
+                        }
+                    })
+
+        }, 5000)
+    }
+
+    //run Word Count once
+    function wordCountOnce() {
+        //use a lock to ensure no conflict.
+        lock = 1;
+        outputPath = fileNameGen();
+        var data = {"dataset.lines.input.paths": inputPath, "dataset.counts.output.path": outputPath};
+        var stringdata = JSON.stringify(data);
+        console.log(stringdata);
+        //start mapreduce
+        $.post("http://localhost:10000/v3/namespaces/default/apps/WordCount/mapreduce/WordCount/start",
+                stringdata
+                , function () {
+                    console.log("Data: " + stringdata);
+                });
+
+
+        $("#execimg").show();
+        window.setTimeout(resultGet(), 3000);
+    }
+
+
+
+
+    //get the result and show in the field set
+    function resultGet() {
+        var resultTimer = setInterval(function () {
+            $.getJSON("http://localhost:10000/v3/namespaces/default/apps/WordCount/mapreduce/WordCount/status",
+                    function (data) {
+                        if (data.status === "STOPPED") {
+                            console.log(data.status);
+
+                            $.getJSON("http://localhost:10000/v3/namespaces/default/apps/WordCount/services/Bench/methods/benchmark",
+                                    function (data) {
+                                        if (true) {
+                                            console.log(data);
+                                            $("#tableTitle").after("<tr><td>" + data.processMethod + "</td><td>" + data.benchsize + "</td><td>" + data.benchduration + "</td><td>" + data.throughput + "</td><td style = \"text-align: center\"><a href=\"http://localhost:10000/v3/namespaces/default/apps/WordCount/services/FileSetService/methods/counts?path="+outputPath+"/part-r-00000\">" +
+                                                    "<img src=\"https://lh3.googleusercontent.com/6Gx6OeYFqcxmydQdB5tOhZNi2PjgNcbIc6bkyugekYztdaUviXDiQJf1GofnkeuAE4BN=s16\" alt=\"\" style=\"width:20px; height:auto;\"></a></td></tr>");
+
+                                            lock = 0;
+                                            clearInterval(resultTimer);
+
+                                        }
+                                    }
+                            );
+
+                        }
+                    }
+            );
+        }, 500);
+    }
+
+
+    //generate a random filename
+    function fileNameGen() {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for (var i = 0; i < 6; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+
+</script>
+
+
+</body>
+
+
+</html>

@@ -17,17 +17,25 @@
       <profile default="true" name="Default" enabled="false">
         <processorPath useClasspath="true" />
       </profile>
-      <profile default="false" name="Annotation profile for FileSetExample" enabled="true">
+      <profile default="false" name="Annotation profile for WordCount" enabled="true">
         <sourceOutputDir name="target\generated-sources\annotations" />
         <sourceTestOutputDir name="target\generated-test-sources\test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="FileSetExample" />
+        <module name="WordCount" />
+      </profile>
+      <profile default="false" name="Annotation profile for DFSIO" enabled="true">
+        <sourceOutputDir name="target\generated-sources\annotations" />
+        <sourceTestOutputDir name="target\generated-test-sources\test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="DFSIO" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="FileSetExample" target="1.6" />
-      <module name="HiBench-CDAP" target="1.6" />
+      <module name="DFSIO" target="1.6" />
+      <module name="hibench-cdap" target="1.6" />
+      <module name="WordCount" target="1.6" />
     </bytecodeTargetLevel>
   </component>
 </project>

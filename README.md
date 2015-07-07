@@ -21,7 +21,7 @@ Go to your CDAP Web UI and add an application with the .jar you built.
 2.Open the BenchUI service with url:
 
         http://[host]:10000/v3/namespaces/[namespace]/apps/[app]/services/BenchUI/methods/UI
-As default: (host: localhost), (namespace: default), (app: WordCount|DFSIO|TeraSort)
+As default: (host: localhost), (namespace: default), (app: WordCount|DFSIO)
 
 ### Run the Application
 

@@ -1,0 +1,14 @@
+co\intel\hibenchcdap\WordCount$Tokenizer.class
+co\intel\hibenchcdap\WordCountApp.class
+co\intel\hibenchcdap\FileSetService.class
+co\intel\hibenchcdap\WordCount.class
+co\intel\hibenchcdap\RandomTextWriter$Generator.class
+co\intel\hibenchcdap\BenchUI$BenchUIHandler.class
+co\intel\hibenchcdap\BenchService.class
+co\intel\hibenchcdap\BenchUI.class
+co\intel\hibenchcdap\WordCount$Counter.class
+co\intel\hibenchcdap\FileSetService$FileSetHandler.class
+co\intel\hibenchcdap\RandomTextWriter.class
+co\intel\hibenchcdap\RandomTextWriter$RandomInputFormat.class
+co\intel\hibenchcdap\RandomTextWriter$RandomInputFormat$RandomRecordReader.class
+co\intel\hibenchcdap\BenchService$BenchHandler.class
