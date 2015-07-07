@@ -22,6 +22,9 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 
+/**
+ * This Application run a mapper to write the file system.
+ */
 public class DFSIO extends AbstractApplication {
 
     @Override

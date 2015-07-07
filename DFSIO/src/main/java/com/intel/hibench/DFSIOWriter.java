@@ -40,8 +40,11 @@ public class DFSIOWriter extends AbstractMapReduce {
 
     private static final Logger LOG = LoggerFactory.getLogger(DFSIOWriter.class);
 
+    //We put the benchmark result in this dataset.
     @UseDataSet("benchData")
     private Table benchData;
+
+
     private static long numBytesToWrite = 100 * 1024 * 1024;
     private static String BENCH_SIZE = "size";
     public static double startTime = 2;
@@ -110,6 +113,7 @@ public class DFSIOWriter extends AbstractMapReduce {
             }
         }
 
+        //this method generates a sentence with certain number of words
         private Text generateSentence(int noWords) {
             StringBuffer sentence = new StringBuffer();
             String space = " ";
@@ -122,6 +126,7 @@ public class DFSIOWriter extends AbstractMapReduce {
     }
 
 
+    //Input format class
     static class RandomInputFormat extends InputFormat<Text, Text> {
 
         /**

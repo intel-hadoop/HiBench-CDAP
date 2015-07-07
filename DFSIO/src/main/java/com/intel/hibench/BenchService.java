@@ -31,6 +31,7 @@ import java.util.Map;
 
 /**
  * Created by peilunzh on 5/11/2015.
+ * This service offers the json format benchmark result
  */
 public class BenchService extends AbstractService {
     public static final String SERVICE_NAME = "Bench";

@@ -10,7 +10,6 @@ To build the workload application, in root directory of certain application and 
 
        mvn clean package
 
-(You may also just use the .jar file in the target directory)
 
 ### Deploy an Application
 Go to your CDAP Web UI and add an application with the .jar you built.
